@@ -25,12 +25,22 @@ export default function VideoPlayer({
   return (
     <>
       {domLoaded && (
-        <ReactPlayer
-          url={queuedVideos[0]}
-          controls
-          onEnded={handleVideoEnded}
-          playing
-        />
+        <>
+          <ReactPlayer
+            url={queuedVideos[0]}
+            controls
+            onEnded={handleVideoEnded}
+            playing
+          />
+          <button
+            type="button"
+            className="rounded-full bg-yellow-600	p-3.5 disabled:opacity-50"
+            onClick={handleVideoEnded}
+            disabled={queuedVideos.length <= 0}
+          >
+            Skip current video
+          </button>
+        </>
       )}
     </>
   );
