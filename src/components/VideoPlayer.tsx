@@ -34,8 +34,9 @@ export default function VideoPlayer({
           />
           <button
             type="button"
-            className="rounded-full bg-yellow-600	p-3.5"
+            className="rounded-full bg-yellow-600	p-3.5 disabled:opacity-50"
             onClick={handleVideoEnded}
+            disabled={queuedVideos.length <= 0}
           >
             Skip current video
           </button>
