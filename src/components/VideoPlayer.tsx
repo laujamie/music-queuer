@@ -12,23 +12,21 @@ export default function VideoPlayer({
   queuedVideos,
   setQueuedVideos,
 }: VideoPlayerProps) {
-  const handleVideoEnded = () => {
-    setQueuedVideos(queuedVideos.slice(1));
-  };
-
   const [domLoaded, setDomLoaded] = useState(false);
 
   useEffect(() => {
     setDomLoaded(true);
   }, []);
 
-  const currVideoURL = queuedVideos[0];
+  const handleVideoEnded = () => {
+    setQueuedVideos(queuedVideos.slice(1));
+  };
 
   return (
     <>
       {domLoaded && (
         <ReactPlayer
-          url={currVideoURL}
+          url={queuedVideos[0]}
           controls
           onEnded={handleVideoEnded}
           playing

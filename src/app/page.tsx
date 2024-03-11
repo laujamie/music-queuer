@@ -1,6 +1,7 @@
 "use client";
 
 import LinkInput from "@/components/LinkInput";
+import QueueList from "@/components/QueueList";
 import VideoPlayer from "@/components/VideoPlayer";
 import { useState } from "react";
 
@@ -17,6 +18,7 @@ export default function Home() {
         queuedVideos={queuedVideos}
         setQueuedVideos={setQueuedVideos}
       />
+      <QueueList queuedVideos={queuedVideos} />
     </main>
   );
 }
