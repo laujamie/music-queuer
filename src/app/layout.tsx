@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import ConvexClientProvider from "@/components/ConvexClientProvider";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
+import ModePicker from "@/components/ModePicker";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +20,19 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <ConvexClientProvider>{children}</ConvexClientProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ConvexClientProvider>
+            <nav>
+              <ModePicker />
+            </nav>
+            <main className="container h-screen py-24">{children}</main>
+          </ConvexClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
