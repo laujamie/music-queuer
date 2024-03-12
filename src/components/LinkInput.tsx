@@ -3,21 +3,15 @@
 import React, { Dispatch, FC, SetStateAction, useState } from "react";
 
 type LinkInputProps = {
-  queuedVideos: string[];
-  setQueuedVideos: Dispatch<SetStateAction<string[]>>;
+  addVideoToQueue: (newQueuedVideo: string) => void;
 };
 
-export default function LinkInput({
-  queuedVideos,
-  setQueuedVideos,
-}: LinkInputProps) {
+export default function LinkInput({ addVideoToQueue }: LinkInputProps) {
   const [inputLink, setInputLink] = useState("");
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const newQueuedVideos = [...queuedVideos];
-    newQueuedVideos.push(inputLink);
-    setQueuedVideos(newQueuedVideos);
+    addVideoToQueue(inputLink);
     setInputLink("");
   };
 
@@ -35,7 +29,9 @@ export default function LinkInput({
           required
           onChange={(e) => setInputLink(e.target.value)}
           value={inputLink}
+          className="text-black"
         />
+        <button type="submit">Submit</button>
       </form>
     </>
   );
