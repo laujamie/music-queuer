@@ -14,6 +14,10 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as lib_auth from "../lib/auth.js";
+import type * as lib_slug from "../lib/slug.js";
+import type * as queues from "../queues.js";
+import type * as shared from "../shared.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -23,7 +27,12 @@ import type {
  * const myFunctionReference = api.myModule.myFunction;
  * ```
  */
-declare const fullApi: ApiFromModules<{}>;
+declare const fullApi: ApiFromModules<{
+  "lib/auth": typeof lib_auth;
+  "lib/slug": typeof lib_slug;
+  queues: typeof queues;
+  shared: typeof shared;
+}>;
 export declare const api: FilterApi<
   typeof fullApi,
   FunctionReference<any, "public">
