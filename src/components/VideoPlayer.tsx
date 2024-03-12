@@ -5,22 +5,18 @@ import ReactPlayer from "react-player";
 
 type VideoPlayerProps = {
   queuedVideos: string[];
-  setQueuedVideos: Dispatch<SetStateAction<string[]>>;
+  handleVideoEnded: () => void;
 };
 
 export default function VideoPlayer({
   queuedVideos,
-  setQueuedVideos,
+  handleVideoEnded,
 }: VideoPlayerProps) {
   const [domLoaded, setDomLoaded] = useState(false);
 
   useEffect(() => {
     setDomLoaded(true);
   }, []);
-
-  const handleVideoEnded = () => {
-    setQueuedVideos(queuedVideos.slice(1));
-  };
 
   return (
     <>
