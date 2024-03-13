@@ -7,6 +7,8 @@ import {
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { redirect } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export default function Home() {
   const [roomCode, setRoomCode] = useState("");
@@ -24,26 +26,27 @@ export default function Home() {
   }, [queueDetails?.code]);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <button
+    <div className="space-y-8 items-center p-24">
+      <Button
         onClick={async () => {
+          console.log("hi");
           const id = await createRoom();
           setQueueId(id);
         }}
       >
         Host Room
-      </button>
-      <div className="flex flex-col gap-1">
-        <input value={roomCode} onChange={(e) => setRoomCode(e.target.value)} />
-        <button
+      </Button>
+      <div className="space-y-4">
+        <Input value={roomCode} onChange={(e) => setRoomCode(e.target.value)} />
+        <Button
           onClick={async () => {
             const id = await joinRoom({ queueCode: roomCode });
             setQueueId(id);
           }}
         >
           Join Room
-        </button>
+        </Button>
       </div>
-    </main>
+    </div>
   );
 }
