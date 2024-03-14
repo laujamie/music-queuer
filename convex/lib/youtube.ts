@@ -53,10 +53,10 @@ const YT_DATA_API_BASE_URL = "https://www.googleapis.com/youtube/v3";
  */
 export async function list(
   query: string,
+  pageToken?: string,
   parts: string[] = ["snippet"],
   types: string[] = ["video"],
-  maxResults: number = 10,
-  pageToken?: string
+  maxResults: number = 10
 ): Promise<ListResponse> {
   const reqUrl = new URL(`${YT_DATA_API_BASE_URL}/search`);
   parts.forEach((part) => reqUrl.searchParams.append("part", part));
