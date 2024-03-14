@@ -24,6 +24,13 @@ type SnippetObj = {
   title: string;
 };
 
+type ItemObj = {
+  etag: string;
+  id?: IdObj;
+  kind: string;
+  snippet?: SnippetObj;
+};
+
 type ListResponse = {
   kind: string;
   etag: string;
@@ -34,9 +41,7 @@ type ListResponse = {
     totalResults: number;
     resultsPerPage: number;
   };
-  items: object[];
-  id?: IdObj;
-  snippet?: SnippetObj;
+  items: ItemObj[];
 };
 
 const YOUTUBE_DATA_API_BASE_URL = "https://www.googleapis.com/youtube/v3";
