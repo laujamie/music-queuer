@@ -4,34 +4,43 @@ type ThumbnailObj = {
   width: number;
 };
 
+export type ThumbnailParentObj = {
+  default: ThumbnailObj;
+  high: ThumbnailObj;
+  medium: ThumbnailObj;
+};
+
 type IdObj = {
   kind: string;
   videoId: string;
 };
 
-type SnippetObj = {
+export type SnippetObj = {
   channelId: string;
   channelTitle: string;
   description: string;
   liveBroadcastContent: string;
   publishTime: string;
   publishedAt: string;
-  thumbnails: {
-    default: ThumbnailObj;
-    high: ThumbnailObj;
-    medium: ThumbnailObj;
-  };
+  thumbnails: ThumbnailParentObj;
   title: string;
 };
 
-type ItemObj = {
+type SearchObj = {
   etag: string;
   id?: IdObj;
   kind: string;
   snippet?: SnippetObj;
 };
 
-type ListResponse = {
+type ItemObj = {
+  etag: string;
+  id: string;
+  kind: string;
+  snippet?: SnippetObj;
+};
+
+type ListResponse<T> = {
   kind: string;
   etag: string;
   nextPageToken: string;
@@ -41,8 +50,12 @@ type ListResponse = {
     totalResults: number;
     resultsPerPage: number;
   };
-  items: ItemObj[];
+  items: T[];
 };
+
+export type SearchResponse = ListResponse<SearchObj>;
+export type VideoResponse = ListResponse<ItemObj>;
+export type ChannelResponse = ListResponse<ItemObj>;
 
 const YOUTUBE_DATA_API_BASE_URL = "https://www.googleapis.com/youtube/v3";
 
@@ -56,16 +69,18 @@ const YOUTUBE_DATA_API_BASE_URL = "https://www.googleapis.com/youtube/v3";
  * @param maxResults - Maximum number of results to return
  * @returns
  */
-export async function list(
+export async function search(
   query: string,
   pageToken?: string,
   parts: string[] = ["snippet"],
   types: string[] = ["video"],
   maxResults: number = 10
-): Promise<ListResponse> {
+): Promise<SearchResponse> {
   const reqUrl = new URL(`${YOUTUBE_DATA_API_BASE_URL}/search`);
-  parts.forEach((part) => reqUrl.searchParams.append("part", part));
-  types.forEach((type) => reqUrl.searchParams.append("type", type));
+  const partsStr = parts.join(",");
+  const typeStr = types.join(",");
+  reqUrl.searchParams.append("part", partsStr);
+  reqUrl.searchParams.append("type", typeStr);
   reqUrl.searchParams.append("q", query);
   reqUrl.searchParams.append("key", process.env.YOUTUBE_DATA_API_KEY!);
   reqUrl.searchParams.append("maxResults", String(maxResults));
@@ -75,5 +90,37 @@ export async function list(
   const res = await fetch(reqUrl, {
     method: "GET",
   });
-  return res.json() as Promise<ListResponse>;
+  return res.json() as Promise<SearchResponse>;
+}
+
+export async function videoDetails(
+  videoIds: string[],
+  parts: string[] = ["snippet"],
+  maxResults: number = 50
+): Promise<VideoResponse> {
+  const videoIdsStr = videoIds.join(",");
+  const partsStr = parts.join(",");
+  const reqUrl = new URL(`${YOUTUBE_DATA_API_BASE_URL}/videos`);
+  reqUrl.searchParams.append("id", videoIdsStr);
+  reqUrl.searchParams.append("key", process.env.YOUTUBE_DATA_API_KEY!);
+  reqUrl.searchParams.append("part", partsStr);
+  reqUrl.searchParams.append("maxResults", String(maxResults));
+  const res = await fetch(reqUrl, { method: "GET" });
+  return res.json() as Promise<VideoResponse>;
+}
+
+export async function channelDetails(
+  channelIds: string[],
+  parts: string[] = ["snippet"],
+  maxResults: number = 50
+): Promise<ChannelResponse> {
+  const reqUrl = new URL(`${YOUTUBE_DATA_API_BASE_URL}/channels`);
+  const partsStr = parts.join(",");
+  const channelIdStr = channelIds.join(",");
+  reqUrl.searchParams.append("id", channelIdStr);
+  reqUrl.searchParams.append("part", partsStr);
+  reqUrl.searchParams.append("key", process.env.YOUTUBE_DATA_API_KEY!);
+  reqUrl.searchParams.append("maxResults", String(maxResults));
+  const res = await fetch(reqUrl, { method: "GET" });
+  return res.json() as Promise<ChannelResponse>;
 }
