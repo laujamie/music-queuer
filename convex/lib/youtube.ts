@@ -39,7 +39,7 @@ type ListResponse = {
   snippet?: SnippetObj;
 };
 
-const YT_DATA_API_BASE_URL = "https://www.googleapis.com/youtube/v3";
+const YOUTUBE_DATA_API_BASE_URL = "https://www.googleapis.com/youtube/v3";
 
 /**
  * This function calls the list operation from the YouTube Data API. For more details on the different options
@@ -58,7 +58,7 @@ export async function list(
   types: string[] = ["video"],
   maxResults: number = 10
 ): Promise<ListResponse> {
-  const reqUrl = new URL(`${YT_DATA_API_BASE_URL}/search`);
+  const reqUrl = new URL(`${YOUTUBE_DATA_API_BASE_URL}/search`);
   parts.forEach((part) => reqUrl.searchParams.append("part", part));
   types.forEach((type) => reqUrl.searchParams.append("type", type));
   reqUrl.searchParams.append("q", query);
