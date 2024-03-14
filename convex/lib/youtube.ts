@@ -45,10 +45,10 @@ const YT_DATA_API_BASE_URL = "https://www.googleapis.com/youtube/v3";
  * This function calls the list operation from the YouTube Data API. For more details on the different options
  * that are available, see here: https://developers.google.com/youtube/v3/docs/search/list
  * @param query - Query to search for
+ * @param pageToken - Token to retrieve a specific page of results
  * @param parts - Parts to include from the search result (should be set to "snippet")
  * @param types - Types to include ("video", "channel", "playlist")
  * @param maxResults - Maximum number of results to return
- * @param pageToken - Token to retrieve a specific page of results
  * @returns
  */
 export async function list(
