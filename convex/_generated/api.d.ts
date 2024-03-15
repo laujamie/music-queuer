@@ -16,8 +16,10 @@ import type {
 } from "convex/server";
 import type * as lib_auth from "../lib/auth.js";
 import type * as lib_slug from "../lib/slug.js";
+import type * as lib_youtube from "../lib/youtube.js";
 import type * as queues from "../queues.js";
 import type * as shared from "../shared.js";
+import type * as youtube from "../youtube.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -30,8 +32,10 @@ import type * as shared from "../shared.js";
 declare const fullApi: ApiFromModules<{
   "lib/auth": typeof lib_auth;
   "lib/slug": typeof lib_slug;
+  "lib/youtube": typeof lib_youtube;
   queues: typeof queues;
   shared: typeof shared;
+  youtube: typeof youtube;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,
