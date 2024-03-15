@@ -27,10 +27,15 @@ export default function QueuePage() {
 
   return (
     <div className="space-y-8">
-      <VideoPlayer
-        queuedVideos={queueDetails?.videoLinks ?? []}
-        handleVideoEnded={skipVideo}
-      />
+      {
+        /* Only show video player for host of page */
+        queueDetails?.hosting && (
+          <VideoPlayer
+            queuedVideos={queueDetails?.videoLinks ?? []}
+            handleVideoEnded={skipVideo}
+          />
+        )
+      }
       <LinkInput
         queuedVideos={queueDetails?.videoLinks ?? []}
         skipVideo={skipVideo}
