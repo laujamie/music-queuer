@@ -2,6 +2,7 @@ import { v } from "convex/values";
 import { mutationWithSession, queryWithSession } from "./lib/auth";
 import { generateSlug } from "./lib/slug";
 import { QueueState } from "./shared";
+import { mutation } from "./_generated/server";
 
 export const create = mutationWithSession({
   args: {},
@@ -70,7 +71,7 @@ export const addSong = mutationWithSession({
   args: { queueId: v.id("queues"), videoUrl: v.string() },
   handler: async (ctx, { queueId, videoUrl }) => {
     const queue = await ctx.db.get(queueId);
-    if (!queue) throw new Error("Queue does not exist");
+    if (queue == null) throw new Error("Queue does not exist");
     await ctx.db.patch(queueId, { links: [...queue.links, videoUrl] });
   },
 });
@@ -79,7 +80,18 @@ export const nextSong = mutationWithSession({
   args: { queueId: v.id("queues") },
   handler: async (ctx, { queueId }) => {
     const queue = await ctx.db.get(queueId);
-    if (!queue) throw new Error("Queue does not exist");
+    if (queue == null) throw new Error("Queue does not exist");
     await ctx.db.patch(queueId, { links: queue.links.slice(1) });
+  },
+});
+
+export const removeSong = mutation({
+  args: { queueId: v.id("queues"), videoUrl: v.string() },
+  handler: async (ctx, { queueId, videoUrl }) => {
+    const queue = await ctx.db.get(queueId);
+    if (queue == null) throw new Error("Queue does not exist");
+    await ctx.db.patch(queueId, {
+      links: queue.links.filter((link) => link !== videoUrl),
+    });
   },
 });
