@@ -94,12 +94,14 @@ export const nextSong = mutationWithSession({
 });
 
 export const removeSong = mutation({
-  args: { queueId: v.id("queues"), videoUrl: v.string() },
-  handler: async (ctx, { queueId, videoUrl }) => {
+  args: { queueId: v.id("queues"), position: v.number() },
+  handler: async (ctx, { queueId, position }) => {
     const queue = await ctx.db.get(queueId);
     if (queue == null) throw new Error("Queue does not exist");
+    if (position < 0 || position >= queue.links.length)
+      throw new Error("Invalid index provided");
     await ctx.db.patch(queueId, {
-      links: queue.links.filter((link) => link !== videoUrl),
+      links: queue.links.filter((_, i) => i !== position),
     });
   },
 });

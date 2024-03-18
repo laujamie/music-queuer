@@ -50,7 +50,10 @@ export default function QueuePage() {
         }}
         id={queueDetails?.id}
       />
-      <QueueList queuedVideos={queueDetails?.videoLinks ?? []} />
+      <QueueList
+        queuedVideos={queueDetails?.videoLinks ?? []}
+        queueId={queueDetails?.id}
+      />
     </div>
   );
 }

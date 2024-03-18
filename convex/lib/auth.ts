@@ -16,7 +16,11 @@ async function getUser(db: DatabaseReader, sessionId: SessionId) {
 export const mutationWithSession = customMutation(mutation, {
   args: SessionIdArg,
   async input(ctx, { sessionId }) {
-    const user = await getUser(ctx.db, sessionId);
+    let user = await getUser(ctx.db, sessionId);
+    if (user == null) {
+      const userId = await ctx.db.insert("users", { sessionId });
+      user = await ctx.db.get(userId);
+    }
     return { ctx: { ...ctx, user, sessionId }, args: {} };
   },
 });

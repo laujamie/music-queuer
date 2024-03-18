@@ -1,20 +1,25 @@
 "use client";
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { useAction } from "convex/react";
+import { useAction, useMutation } from "convex/react";
 import Image from "next/image";
 import { Separator } from "@/components/ui/separator";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { api } from "@/convex/_generated/api";
 import { ResultMap } from "@/convex/youtube";
 import { Skeleton } from "./ui/skeleton";
+import { Button } from "./ui/button";
+import { CircleX, DeleteIcon } from "lucide-react";
+import { Id } from "@/convex/_generated/dataModel";
 
 type QueueListProps = {
   queuedVideos: string[];
+  queueId?: Id<"queues">;
 };
 
-export default function QueueList({ queuedVideos }: QueueListProps) {
+export default function QueueList({ queuedVideos, queueId }: QueueListProps) {
   const [videoDetails, setVideoDetails] = useState<ResultMap | null>(null);
   const getVideoDetails = useAction(api.youtube.list);
+  const removeSong = useMutation(api.queues.removeSong);
 
   const videoDetailsCallback = useCallback(async () => {
     const response = await getVideoDetails({ links: queuedVideos });
@@ -53,6 +58,7 @@ export default function QueueList({ queuedVideos }: QueueListProps) {
         {videoIds.map((videoId, i) => {
           if (videoId == null || i === 0) return null;
           const details = videoDetails?.[videoId];
+          if (details == null) return null;
           return (
             <li key={`video-details-${videoId}-${i}`}>
               {i > 1 && <Separator />}
@@ -66,6 +72,18 @@ export default function QueueList({ queuedVideos }: QueueListProps) {
                 <div className="space-y-2">
                   <p>{details.title}</p>
                   <p className="font-bold">{details.channelTitle}</p>
+                </div>
+                <div className="grow text-right">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => {
+                      if (queueId == null) return;
+                      removeSong({ queueId, position: i });
+                    }}
+                  >
+                    <CircleX className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
             </li>
