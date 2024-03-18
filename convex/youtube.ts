@@ -24,13 +24,14 @@ type SnippetWithChanThumbnail = SnippetObj & {
   id: string;
 };
 
-type ResultMap = {
+export type ResultMap = {
   [id: string]: SnippetWithChanThumbnail;
 };
 
 export const list = action({
-  args: { links: v.array(v.string()) },
+  args: { links: v.union(v.null(), v.array(v.string())) },
   handler: async (_, args) => {
+    if (!args.links || args.links.length === 0) return null;
     const videoIds = args.links.map(
       (link) => new URL(link).searchParams.get("v")!
     );

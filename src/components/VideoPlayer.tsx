@@ -19,6 +19,10 @@ export default function VideoPlayer({
     setDomLoaded(true);
   }, []);
 
+  if (queuedVideos.length === 0) {
+    return <p>No video loaded.</p>;
+  }
+
   return (
     domLoaded && (
       <div className="relative pt-[56.25%]">

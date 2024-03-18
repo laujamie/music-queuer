@@ -14,6 +14,9 @@ import {
 } from "./ui/form";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
+import { useSessionMutation } from "convex-helpers/react/sessions.js";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
 
 const LinkInputFormSchema = z.object({
   url: z.string().url(),
@@ -23,12 +26,14 @@ type LinkInputProps = {
   skipVideo: () => void;
   queuedVideos: string[];
   addVideoToQueue: (newQueuedVideo: string) => void;
+  id?: Id<"queues">;
 };
 
 export default function LinkInput({
   addVideoToQueue,
   skipVideo,
   queuedVideos,
+  id,
 }: LinkInputProps) {
   const form = useForm<z.infer<typeof LinkInputFormSchema>>({
     resolver: zodResolver(LinkInputFormSchema),
@@ -41,6 +46,8 @@ export default function LinkInput({
     addVideoToQueue(values.url);
     form.reset();
   };
+
+  const becomeHost = useSessionMutation(api.queues.becomeHost);
 
   return (
     <Form {...form}>
@@ -72,6 +79,17 @@ export default function LinkInput({
             variant="secondary"
           >
             Skip current video
+          </Button>
+          <Button
+            variant="secondary"
+            disabled={id == null}
+            onClick={(e) => {
+              e.preventDefault();
+              if (!id) return;
+              becomeHost({ id });
+            }}
+          >
+            Become Host
           </Button>
         </div>
       </form>

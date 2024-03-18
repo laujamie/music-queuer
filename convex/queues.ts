@@ -67,6 +67,14 @@ export const join = mutationWithSession({
   },
 });
 
+export const becomeHost = mutationWithSession({
+  args: { id: v.id("queues") },
+  handler: async (ctx, { id }) => {
+    if (ctx.user == null) throw new Error("User could not be found");
+    await ctx.db.patch(id, { hostId: ctx.user._id });
+  },
+});
+
 export const addSong = mutationWithSession({
   args: { queueId: v.id("queues"), videoUrl: v.string() },
   handler: async (ctx, { queueId, videoUrl }) => {

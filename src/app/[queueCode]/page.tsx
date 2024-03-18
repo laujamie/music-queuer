@@ -2,6 +2,7 @@
 
 import { useParams } from "next/navigation";
 import {
+  useSessionId,
   useSessionMutation,
   useSessionQuery,
 } from "convex-helpers/react/sessions";
@@ -18,6 +19,9 @@ export default function QueuePage() {
   });
   const nextVideo = useSessionMutation(api.queues.nextSong);
   const addVideo = useSessionMutation(api.queues.addSong);
+
+  const [sessionId] = useSessionId();
+  console.log(sessionId);
 
   const skipVideo = useCallback(() => {
     if (queueDetails != null) {
@@ -44,6 +48,7 @@ export default function QueuePage() {
             addVideo({ queueId: queueDetails.id, videoUrl: newQueuedVideo });
           }
         }}
+        id={queueDetails?.id}
       />
       <QueueList queuedVideos={queueDetails?.videoLinks ?? []} />
     </div>
