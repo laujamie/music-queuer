@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import ConvexClientProvider from "@/components/ConvexClientProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
 import ModePicker from "@/components/ModePicker";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -29,6 +29,7 @@ export default function RootLayout({
               <ModePicker />
             </nav>
             <main className="container h-screen py-24">{children}</main>
+            <Toaster />
           </ConvexClientProvider>
         </ThemeProvider>
       </body>

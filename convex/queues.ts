@@ -12,12 +12,13 @@ export const create = mutationWithSession({
       const { sessionId } = ctx;
       userId = await ctx.db.insert("users", { sessionId });
     }
+    const slug = generateSlug();
     const queueId = await ctx.db.insert("queues", {
       hostId: userId,
-      slug: generateSlug(),
+      slug,
       links: [],
     });
-    return queueId;
+    return { queueId, code: slug };
   },
 });
 
@@ -75,7 +76,7 @@ export const becomeHost = mutationWithSession({
   },
 });
 
-export const addSong = mutationWithSession({
+export const addSong = mutation({
   args: { queueId: v.id("queues"), videoUrl: v.string() },
   handler: async (ctx, { queueId, videoUrl }) => {
     const queue = await ctx.db.get(queueId);
@@ -84,7 +85,7 @@ export const addSong = mutationWithSession({
   },
 });
 
-export const nextSong = mutationWithSession({
+export const nextSong = mutation({
   args: { queueId: v.id("queues") },
   handler: async (ctx, { queueId }) => {
     const queue = await ctx.db.get(queueId);

@@ -26,6 +26,7 @@
     "react-dom": "^18",
     "react-hook-form": "^7.51.0",
     "react-player": "^2.15.1",
+    "sonner": "^1.4.3",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
     "usehooks-ts": "^3.0.1",
