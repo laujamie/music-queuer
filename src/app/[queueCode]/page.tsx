@@ -9,6 +9,7 @@ import LinkInput from "@/components/LinkInput";
 import QueueList from "@/components/QueueList";
 import { useCallback } from "react";
 import Search from "@/components/Search";
+import ClipboardCopy from "@/components/ClipboardCopy";
 
 export default function QueuePage() {
   const params = useParams<{ queueCode: string }>();
@@ -56,6 +57,10 @@ export default function QueuePage() {
           }
         />
       )}
+      <div className="space-y-1">
+        <h2>Invite your friends!</h2>
+        <ClipboardCopy copyText={window.location.href} />
+      </div>
     </div>
   );
 }
