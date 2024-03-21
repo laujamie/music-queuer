@@ -26,7 +26,7 @@ export type SnippetObj = {
   title: string;
 };
 
-type SearchObj = {
+export type SearchObj = {
   etag: string;
   id?: IdObj;
   kind: string;
