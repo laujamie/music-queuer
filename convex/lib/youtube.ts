@@ -1,4 +1,4 @@
-type ThumbnailObj = {
+export type ThumbnailObj = {
   height: number;
   url: string;
   width: number;

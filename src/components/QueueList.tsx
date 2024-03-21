@@ -10,6 +10,7 @@ import { Skeleton } from "./ui/skeleton";
 import { Button } from "./ui/button";
 import { CircleX, DeleteIcon } from "lucide-react";
 import { Id } from "@/convex/_generated/dataModel";
+import VideoItem from "./VideoItem";
 
 type QueueListProps = {
   queuedVideos: string[];
@@ -62,18 +63,9 @@ export default function QueueList({ queuedVideos, queueId }: QueueListProps) {
           return (
             <li key={`video-details-${videoId}-${i}`}>
               {i > 1 && <Separator />}
-              <div className="flex space-x-4 items-center">
-                <Image
-                  src={details.thumbnails.default.url}
-                  width={details.thumbnails.default.width}
-                  height={details.thumbnails.default.height}
-                  alt={details.title}
-                />
-                <div className="space-y-2">
-                  <p>{details.title}</p>
-                  <p className="font-bold">{details.channelTitle}</p>
-                </div>
-                <div className="grow text-right">
+              <VideoItem
+                thumbnail={details.thumbnails.default}
+                ActionButton={
                   <Button
                     size="icon"
                     variant="ghost"
@@ -84,8 +76,10 @@ export default function QueueList({ queuedVideos, queueId }: QueueListProps) {
                   >
                     <CircleX className="h-4 w-4" />
                   </Button>
-                </div>
-              </div>
+                }
+                title={details.title}
+                channelTitle={details.channelTitle}
+              />
             </li>
           );
         })}

@@ -11,6 +11,7 @@ import { Input } from "./ui/input";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
 import { Button } from "./ui/button";
 import type { SearchObj } from "@/convex/lib/youtube";
+import VideoItem from "./VideoItem";
 
 const formSchema = z.object({
   query: z
@@ -92,21 +93,12 @@ export default function Search({ addToQueue }: SearchProps) {
             if (item.id == null || item.snippet == null) return null;
             // TODO: Clean up search results into new component
             return (
-              <div
+              <VideoItem
                 key={`search-result-${item.id?.videoId}-${i}`}
-                className="flex space-x-4"
-              >
-                <Image
-                  src={item.snippet.thumbnails.default.url}
-                  height={item.snippet.thumbnails.default.height}
-                  width={item.snippet.thumbnails.default.width}
-                  alt={item.snippet.title}
-                />
-                <div className="space-y-2">
-                  <p>{item.snippet.title}</p>
-                  <p className="font-bold">{item.snippet.channelTitle}</p>
-                </div>
-                <div className="grow text-right">
+                thumbnail={item.snippet.thumbnails.default}
+                title={item.snippet.title}
+                channelTitle={item.snippet.channelTitle}
+                ActionButton={
                   <Button
                     onClick={() =>
                       addToQueue(
@@ -117,8 +109,8 @@ export default function Search({ addToQueue }: SearchProps) {
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
-                </div>
-              </div>
+                }
+              />
             );
           })}
         </div>
