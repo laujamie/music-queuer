@@ -1,8 +1,8 @@
 "use client";
 
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState, HTMLAttributes } from "react";
 import ReactPlayer from "react-player";
-import { Button } from "./ui/button";
+import { toast } from "sonner";
 
 type VideoPlayerProps = {
   queuedVideos: string[];
@@ -38,6 +38,7 @@ export default function VideoPlayer({
             youtube: {
               onUnstarted: () => {
                 handleVideoEnded();
+                toast.error("Failed to play video");
               },
             },
           }}

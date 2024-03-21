@@ -88,11 +88,9 @@ export default function QueueList({ queuedVideos, queueId }: QueueListProps) {
   }, [videoDetails, videoIds]);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Queued YouTube Videos</CardTitle>
-      </CardHeader>
-      <CardContent>{cardContent}</CardContent>
-    </Card>
+    <div className="space-y-2">
+      <h3 className="text-lg font-bold">Up Next</h3>
+      {cardContent}
+    </div>
   );
 }

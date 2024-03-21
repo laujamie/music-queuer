@@ -30,12 +30,19 @@ export default function QueuePage() {
       {
         /* Only show video player for host of page */
         queueDetails?.hosting && (
-          <VideoPlayer
-            queuedVideos={queueDetails?.videoLinks ?? []}
-            handleVideoEnded={skipVideo}
-          />
+          <div className="flex-grow">
+            <VideoPlayer
+              queuedVideos={queueDetails?.videoLinks ?? []}
+              handleVideoEnded={skipVideo}
+            />
+          </div>
         )
       }
+      <QueueList
+        queuedVideos={queueDetails?.videoLinks ?? []}
+        queueId={queueDetails?.id}
+      />
+
       <LinkInput
         queuedVideos={queueDetails?.videoLinks ?? []}
         skipVideo={skipVideo}
@@ -46,10 +53,7 @@ export default function QueuePage() {
         }}
         id={queueDetails?.id}
       />
-      <QueueList
-        queuedVideos={queueDetails?.videoLinks ?? []}
-        queueId={queueDetails?.id}
-      />
+
       {queueDetails?.hosting === false && (
         <Search
           addToQueue={async (link) =>

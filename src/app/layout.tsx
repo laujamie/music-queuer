@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
 import ModePicker from "@/components/ModePicker";
 import { Toaster } from "@/components/ui/sonner";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -16,8 +17,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body>
+    <html lang="en" className="h-full">
+      <body className="flex h-full flex-col">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -25,10 +26,15 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ConvexClientProvider>
-            <nav>
+            <nav className="container py-2 flex items-center">
+              <div className="grow">
+                <Link href="/">
+                  <p className="font-bold text-lg">YouTube Queuer</p>
+                </Link>
+              </div>
               <ModePicker />
             </nav>
-            <main className="container h-screen py-24">{children}</main>
+            <main className="container grow">{children}</main>
             <Toaster />
           </ConvexClientProvider>
         </ThemeProvider>
