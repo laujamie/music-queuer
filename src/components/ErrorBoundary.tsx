@@ -41,7 +41,7 @@ export default class ErrorBoundary extends Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div>
+        <div className="space-y-2 text-center">
           <h1>Sorry, there was an error</h1>
           <Button
             onClick={() => {
