@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import ConvexClientProvider from "@/components/ConvexClientProvider";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import "./globals.css";
 import ModePicker from "@/components/ModePicker";
 import { Toaster } from "@/components/ui/sonner";
-import Link from "next/link";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,25 +20,27 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <body className="flex h-full flex-col">
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <ConvexClientProvider>
-            <nav className="container py-2 flex items-center">
-              <div className="grow">
-                <Link href="/">
-                  <p className="font-bold text-lg">YouTube Queuer</p>
-                </Link>
-              </div>
-              <ModePicker />
-            </nav>
-            <main className="container grow">{children}</main>
-            <Toaster />
-          </ConvexClientProvider>
-        </ThemeProvider>
+        <ErrorBoundary>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <ConvexClientProvider>
+              <nav className="container py-2 flex items-center">
+                <div className="grow">
+                  <Link href="/">
+                    <p className="font-bold text-lg">YouTube Queuer</p>
+                  </Link>
+                </div>
+                <ModePicker />
+              </nav>
+              <main className="container grow">{children}</main>
+              <Toaster />
+            </ConvexClientProvider>
+          </ThemeProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );
