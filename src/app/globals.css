@@ -121,3 +121,10 @@
     --ring: 263.4 70% 50.4%;
   }
 }
+
+body {
+  background-image: url("/background.svg");
+  background-position: calc(100% + 30%) calc(100% - 10%);
+  background-repeat: no-repeat;
+  background-size: 40%;
+}
