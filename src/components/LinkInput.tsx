@@ -77,7 +77,7 @@ export default function LinkInput({
             </FormItem>
           )}
         />
-        <div className="flex gap-x-1">
+        <div className="flex gap-x-1.5">
           <Button type="submit" disabled={submitLoading}>
             {submitLoading && (
               <LoaderCircleIcon className="h-4 w-4 animate-spin" />

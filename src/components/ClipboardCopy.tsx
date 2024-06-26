@@ -29,7 +29,7 @@ export default function ClipboardCopy({ copyText }: ClipboardCopyProps) {
   };
 
   return (
-    <div className="flex">
+    <div className="flex gap-x-1.5 items-center">
       <Input type="text" value={copyText} readOnly />
       <Button onClick={handleCopyClick}>
         <span>{isCopied ? "Copied!" : "Copy"}</span>
