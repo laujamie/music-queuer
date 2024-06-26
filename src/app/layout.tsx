@@ -46,6 +46,7 @@ export default function RootLayout({
                 <a
                   href="https://github.com/laujamie/music-queuer"
                   className="hover:text-primary"
+                  aria-label="Github repository link"
                 >
                   <GithubIcon />
                 </a>
