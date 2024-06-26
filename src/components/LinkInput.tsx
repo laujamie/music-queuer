@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { LoaderCircleIcon } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -14,18 +15,18 @@ import {
 } from "./ui/form";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { useSessionMutation } from "convex-helpers/react/sessions.js";
-import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { toast } from "sonner";
 
 const LinkInputFormSchema = z.object({
   url: z.string().url(),
 });
 
 type LinkInputProps = {
-  skipVideo: () => void;
+  skipVideo: () => Promise<void>;
   queuedVideos: string[];
-  addVideoToQueue: (newQueuedVideo: string) => void;
+  addVideoToQueue: (newQueuedVideo: string) => Promise<void>;
+  becomeHost: () => Promise<void>;
   id?: Id<"queues">;
 };
 
@@ -34,7 +35,12 @@ export default function LinkInput({
   skipVideo,
   queuedVideos,
   id,
+  becomeHost,
 }: LinkInputProps) {
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [skipLoading, setSkipLoading] = useState(false);
+  const [hostLoading, setHostLoading] = useState(false);
+
   const form = useForm<z.infer<typeof LinkInputFormSchema>>({
     resolver: zodResolver(LinkInputFormSchema),
     defaultValues: {
@@ -43,11 +49,14 @@ export default function LinkInput({
   });
 
   const handleSubmit = (values: z.infer<typeof LinkInputFormSchema>) => {
-    addVideoToQueue(values.url);
-    form.reset();
+    setSubmitLoading(true);
+    addVideoToQueue(values.url)
+      .then(() => form.reset())
+      .catch(() =>
+        toast.error("Failed to add video to queue, please try again...")
+      )
+      .finally(() => setSubmitLoading(false));
   };
-
-  const becomeHost = useSessionMutation(api.queues.becomeHost);
 
   return (
     <Form {...form}>
@@ -69,27 +78,48 @@ export default function LinkInput({
           )}
         />
         <div className="flex gap-x-1">
-          <Button type="submit">Submit</Button>
+          <Button type="submit" disabled={submitLoading}>
+            {submitLoading && (
+              <LoaderCircleIcon className="h-4 w-4 animate-spin" />
+            )}
+            &nbsp;Submit
+          </Button>
           <Button
             onClick={(e) => {
               e.preventDefault();
-              skipVideo();
+              setSkipLoading(true);
+              skipVideo()
+                .catch(() =>
+                  toast.error("Failed to skip video, please try again...")
+                )
+                .finally(() => setSkipLoading(false));
             }}
-            disabled={queuedVideos.length <= 0}
+            disabled={skipLoading || queuedVideos.length <= 0}
             variant="secondary"
           >
-            Skip current video
+            {skipLoading && (
+              <LoaderCircleIcon className="h-4 w-4 animate-spin" />
+            )}
+            &nbsp;Skip current video
           </Button>
           <Button
             variant="secondary"
-            disabled={id == null}
+            disabled={hostLoading || id == null}
             onClick={(e) => {
               e.preventDefault();
-              if (!id) return;
-              becomeHost({ id });
+              setHostLoading(true);
+              becomeHost()
+                .then(() => toast.success("You are now the host of this room"))
+                .catch(() =>
+                  toast.error("Failed to become host, please try again...")
+                )
+                .finally(() => setHostLoading(false));
             }}
           >
-            Become Host
+            {hostLoading && (
+              <LoaderCircleIcon className="h-4 w-4 animate-spin" />
+            )}
+            &nbsp;Become Host
           </Button>
         </div>
       </form>

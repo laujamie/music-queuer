@@ -3,9 +3,9 @@ import { useCallback, useState } from "react";
 import { useAction } from "convex/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus, Search as SearchIcon } from "lucide-react";
+import { Plus, Search as SearchIcon, LoaderCircleIcon } from "lucide-react";
 import { z } from "zod";
-import Image from "next/image";
+import { toast } from "sonner";
 import { api } from "@/convex/_generated/api";
 import { Input } from "./ui/input";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
@@ -24,6 +24,9 @@ type SearchProps = {
 };
 
 export default function Search({ addToQueue }: SearchProps) {
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [addQueueLoading, setAddQueueLoading] = useState(false);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -40,12 +43,19 @@ export default function Search({ addToQueue }: SearchProps) {
   const search = useAction(api.youtube.search);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const results = await search({ query: values.query });
-    setSearchResults({
-      items: results.items,
-      pageToken: results.nextPageToken,
-      query: values.query,
-    });
+    setSearchLoading(true);
+    try {
+      const results = await search({ query: values.query });
+      setSearchResults({
+        items: results.items,
+        pageToken: results.nextPageToken,
+        query: values.query,
+      });
+    } catch {
+      toast.error("Search failed, please try again...");
+    } finally {
+      setSearchLoading(false);
+    }
   }
 
   const loadMoreSearch = useCallback(async () => {
@@ -82,8 +92,17 @@ export default function Search({ addToQueue }: SearchProps) {
               </FormItem>
             )}
           />
-          <Button type="submit" variant="ghost" size="icon">
-            <SearchIcon className="h-4 w-4" />
+          <Button
+            type="submit"
+            variant="ghost"
+            size="icon"
+            disabled={searchLoading}
+          >
+            {searchLoading ? (
+              <LoaderCircleIcon className="h-4 w-4 animate-spin" />
+            ) : (
+              <SearchIcon className="h-4 w-4" />
+            )}
           </Button>
         </form>
       </Form>
@@ -100,12 +119,20 @@ export default function Search({ addToQueue }: SearchProps) {
                 channelTitle={item.snippet.channelTitle}
                 ActionButton={
                   <Button
-                    onClick={() =>
+                    onClick={() => {
+                      setAddQueueLoading(true);
                       addToQueue(
                         `https://youtube.com/watch?v=${item.id!.videoId}`
                       )
-                    }
+                        .catch(() =>
+                          toast.error(
+                            "Failed to add video to queue, please try again..."
+                          )
+                        )
+                        .finally(() => setAddQueueLoading(false));
+                    }}
                     variant="ghost"
+                    disabled={addQueueLoading}
                   >
                     <Plus className="h-4 w-4" />
                   </Button>

@@ -2,7 +2,10 @@
 
 import { useParams } from "next/navigation";
 import { useMutation } from "convex/react";
-import { useSessionQuery } from "convex-helpers/react/sessions";
+import {
+  useSessionMutation,
+  useSessionQuery,
+} from "convex-helpers/react/sessions";
 import { api } from "@/convex/_generated/api";
 import VideoPlayer from "@/components/VideoPlayer";
 import LinkInput from "@/components/LinkInput";
@@ -18,10 +21,11 @@ export default function QueuePage() {
   });
   const nextVideo = useMutation(api.queues.nextSong);
   const addVideo = useMutation(api.queues.addSong);
+  const becomeHost = useSessionMutation(api.queues.becomeHost);
 
-  const skipVideo = useCallback(() => {
+  const skipVideo = useCallback(async () => {
     if (queueDetails != null) {
-      nextVideo({ queueId: queueDetails.id });
+      await nextVideo({ queueId: queueDetails.id });
     }
   }, [queueDetails, nextVideo]);
 
@@ -46,12 +50,20 @@ export default function QueuePage() {
       <LinkInput
         queuedVideos={queueDetails?.videoLinks ?? []}
         skipVideo={skipVideo}
-        addVideoToQueue={(newQueuedVideo) => {
+        addVideoToQueue={async (newQueuedVideo) => {
           if (queueDetails != null) {
-            addVideo({ queueId: queueDetails.id, videoUrl: newQueuedVideo });
+            await addVideo({
+              queueId: queueDetails.id,
+              videoUrl: newQueuedVideo,
+            });
           }
         }}
         id={queueDetails?.id}
+        becomeHost={async () => {
+          if (queueDetails?.id) {
+            await becomeHost({ id: queueDetails.id });
+          }
+        }}
       />
 
       {queueDetails?.hosting === false && (

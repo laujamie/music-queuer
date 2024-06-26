@@ -25,7 +25,7 @@ export default function ClipboardCopy({ copyText }: ClipboardCopyProps) {
         setIsCopied(true);
         setTimeout(() => setIsCopied(false), 1500);
       })
-      .catch((err) => toast.error(`Failed to copy text: ${err}`));
+      .catch(() => toast.error("Failed to copy text"));
   };
 
   return (
