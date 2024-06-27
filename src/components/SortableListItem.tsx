@@ -19,6 +19,7 @@ export default function SortableListItem({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+    touchAction: "none",
   };
 
   return (
