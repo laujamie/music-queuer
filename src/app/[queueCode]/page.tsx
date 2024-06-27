@@ -10,9 +10,10 @@ import { api } from "@/convex/_generated/api";
 import VideoPlayer from "@/components/VideoPlayer";
 import LinkInput from "@/components/LinkInput";
 import QueueList from "@/components/QueueList";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import Search from "@/components/Search";
 import ClipboardCopy from "@/components/ClipboardCopy";
+import { toast } from "sonner";
 
 export default function QueuePage() {
   const params = useParams<{ queueCode: string }>();
@@ -22,6 +23,9 @@ export default function QueuePage() {
   const nextVideo = useMutation(api.queues.nextSong);
   const addVideo = useMutation(api.queues.addSong);
   const becomeHost = useSessionMutation(api.queues.becomeHost);
+  const moveQueuedVideo = useMutation(api.queues.moveSong);
+
+  const [moveLoading, setMoveLoading] = useState(false);
 
   const skipVideo = useCallback(async () => {
     if (queueDetails != null) {
@@ -43,6 +47,16 @@ export default function QueuePage() {
         )
       }
       <QueueList
+        moveLoading={moveLoading}
+        moveQueuedVideo={async (currentIndex, newIndex) => {
+          if (queueDetails != null) {
+            await moveQueuedVideo({
+              queueId: queueDetails.id,
+              currentIndex,
+              newIndex,
+            });
+          }
+        }}
         queuedVideos={queueDetails?.videoLinks ?? []}
         queueId={queueDetails?.id}
       />
@@ -51,11 +65,20 @@ export default function QueuePage() {
         queuedVideos={queueDetails?.videoLinks ?? []}
         skipVideo={skipVideo}
         addVideoToQueue={async (newQueuedVideo) => {
+          setMoveLoading(true);
           if (queueDetails != null) {
-            await addVideo({
-              queueId: queueDetails.id,
-              videoUrl: newQueuedVideo,
-            });
+            try {
+              await addVideo({
+                queueId: queueDetails.id,
+                videoUrl: newQueuedVideo,
+              });
+            } catch {
+              toast.error(
+                "Failed to update order of queue, please try again..."
+              );
+            } finally {
+              setMoveLoading(false);
+            }
           }
         }}
         id={queueDetails?.id}
@@ -75,7 +98,9 @@ export default function QueuePage() {
       )}
       <div className="space-y-1">
         <h2>Invite your friends!</h2>
-        <ClipboardCopy copyText={window.location.href} />
+        <ClipboardCopy
+          copyText={typeof window !== "undefined" ? window.location.href : ""}
+        />
       </div>
     </div>
   );

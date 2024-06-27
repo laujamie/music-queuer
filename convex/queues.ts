@@ -106,3 +106,33 @@ export const removeSong = mutation({
     });
   },
 });
+
+export const moveSong = mutation({
+  args: {
+    queueId: v.id("queues"),
+    currentIndex: v.number(),
+    newIndex: v.number(),
+  },
+  handler: async (ctx, { queueId, currentIndex, newIndex }) => {
+    const queue = await ctx.db.get(queueId);
+    if (queue == null) {
+      throw new Error("Queue does not exist");
+    }
+    if (currentIndex < 0 || currentIndex >= queue.links.length) {
+      throw new Error("Invalid currentIndex");
+    }
+    if (newIndex < 0 || newIndex >= queue.links.length) {
+      throw new Error("Invalid newIndex");
+    }
+    if (currentIndex === newIndex) {
+      return;
+    }
+    const newLinks: string[] = [...queue.links];
+    const temp = newLinks[currentIndex];
+    newLinks[currentIndex] = newLinks[newIndex];
+    newLinks[newIndex] = temp;
+    await ctx.db.patch(queueId, {
+      links: newLinks,
+    });
+  },
+});
