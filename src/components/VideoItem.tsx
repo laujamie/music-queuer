@@ -16,7 +16,7 @@ export default function VideoItem({
   ActionButton,
 }: VideoItemProps) {
   return (
-    <div className="flex space-x-4 items-center">
+    <div className="flex space-x-4 items-center py-4">
       <Image
         src={thumbnail.url}
         height={thumbnail.height}

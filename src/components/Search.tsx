@@ -70,7 +70,7 @@ export default function Search({ addToQueue }: SearchProps) {
       items: [...searchResults.items, ...results.items],
       pageToken: results.nextPageToken,
     });
-  }, [searchResults?.pageToken, searchResults?.query]);
+  }, [searchResults, search]);
 
   return (
     <section className="space-y-2">

@@ -1,7 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
 import { useParams } from "next/navigation";
-import { useMutation } from "convex/react";
+import { useMutation, useAction } from "convex/react";
 import {
   useSessionMutation,
   useSessionQuery,
@@ -14,6 +15,7 @@ import { useCallback, useState } from "react";
 import Search from "@/components/Search";
 import ClipboardCopy from "@/components/ClipboardCopy";
 import { toast } from "sonner";
+import { ResultMap } from "@/convex/youtube";
 
 export default function QueuePage() {
   const params = useParams<{ queueCode: string }>();
@@ -24,8 +26,39 @@ export default function QueuePage() {
   const addVideo = useMutation(api.queues.addSong);
   const becomeHost = useSessionMutation(api.queues.becomeHost);
   const moveQueuedVideo = useMutation(api.queues.moveSong);
+  const removeSong = useMutation(api.queues.removeSong);
+
+  const getVideoDetails = useAction(api.youtube.list);
 
   const [moveLoading, setMoveLoading] = useState(false);
+  const [removeLoading, setRemoveLoading] = useState(false);
+  const [videoDetails, setVideoDetails] = useState<ResultMap | null>(null);
+  const [videoDetailsLoading, setVideoDetailsLoading] = useState(false);
+  const [videoDetailsError, setVideoDetailsError] = useState<
+    string | undefined
+  >(undefined);
+
+  const videoDetailsCallback = useCallback(async () => {
+    if (!queueDetails?.videoLinks) return;
+    setVideoDetailsLoading(true);
+    try {
+      const response = await getVideoDetails({
+        links: queueDetails?.videoLinks,
+      });
+      setVideoDetails(response);
+      setVideoDetailsError(undefined);
+    } catch {
+      setVideoDetailsError("Failed to load video details");
+    } finally {
+      setVideoDetailsLoading(false);
+    }
+  }, [queueDetails?.videoLinks, getVideoDetails]);
+
+  useEffect(() => {
+    if (queueDetails?.videoLinks && queueDetails.videoLinks.length > 0) {
+      videoDetailsCallback();
+    }
+  }, [queueDetails, videoDetailsCallback]);
 
   const skipVideo = useCallback(async () => {
     if (queueDetails != null) {
@@ -59,6 +92,20 @@ export default function QueuePage() {
         }}
         queuedVideos={queueDetails?.videoLinks ?? []}
         queueId={queueDetails?.id}
+        removeSong={async ({ queueId, position }) => {
+          setRemoveLoading(true);
+          try {
+            await removeSong({ queueId, position });
+          } catch {
+            toast.error("Failed to remove song, please try again...");
+          } finally {
+            setRemoveLoading(false);
+          }
+        }}
+        removeLoading={removeLoading}
+        videoDetails={videoDetails}
+        videoDetailsLoading={videoDetailsLoading}
+        videoDetailsError={videoDetailsError}
       />
 
       <LinkInput

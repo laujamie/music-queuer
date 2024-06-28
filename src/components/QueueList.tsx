@@ -1,11 +1,9 @@
 "use client";
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { useAction, useMutation } from "convex/react";
+import { useCallback, useMemo } from "react";
 import {
   DndContext,
   DragEndEvent,
   KeyboardSensor,
-  PointerSensor,
   closestCenter,
   useSensor,
   useSensors,
@@ -16,7 +14,6 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { Separator } from "@/components/ui/separator";
-import { api } from "@/convex/_generated/api";
 import { ResultMap } from "@/convex/youtube";
 import { Skeleton } from "./ui/skeleton";
 import { Button } from "./ui/button";
@@ -24,12 +21,21 @@ import { CircleX, LoaderCircleIcon } from "lucide-react";
 import { Id } from "@/convex/_generated/dataModel";
 import VideoItem from "./VideoItem";
 import SortableListItem from "./SortableListItem";
+import { MouseSensor, TouchSensor } from "@/lib/dnd";
 
 type QueueListProps = {
   queuedVideos: string[];
   queueId?: Id<"queues">;
   moveQueuedVideo: (currentIndex: number, newIndex: number) => Promise<void>;
   moveLoading: boolean;
+  removeSong: (props: {
+    queueId: Id<"queues">;
+    position: number;
+  }) => Promise<void>;
+  videoDetails: ResultMap | null;
+  removeLoading: boolean;
+  videoDetailsLoading: boolean;
+  videoDetailsError?: string;
 };
 
 export default function QueueList({
@@ -37,35 +43,25 @@ export default function QueueList({
   queueId,
   moveQueuedVideo,
   moveLoading,
+  removeSong,
+  removeLoading,
+  videoDetails,
+  videoDetailsLoading,
+  videoDetailsError,
 }: QueueListProps) {
-  const [videoDetails, setVideoDetails] = useState<ResultMap | null>(null);
-  const getVideoDetails = useAction(api.youtube.list);
-  const removeSong = useMutation(api.queues.removeSong);
-
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(MouseSensor, {
+      activationConstraint: {
+        distance: 10,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        distance: 10,
+      },
+    }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
-
-  const [videoDetailsError, setVideoDetailsError] = useState<
-    string | undefined
-  >(undefined);
-  const [videoDetailsLoading, setVideoDetailsLoading] = useState(false);
-
-  const videoDetailsCallback = useCallback(async () => {
-    setVideoDetailsLoading(true);
-    try {
-      const response = await getVideoDetails({
-        links: queuedVideos,
-      });
-      setVideoDetails(response);
-      setVideoDetailsError(undefined);
-    } catch {
-      setVideoDetailsError("Failed to load video details");
-    } finally {
-      setVideoDetailsLoading(false);
-    }
-  }, [queuedVideos]);
 
   const videoIds = useMemo(() => {
     return queuedVideos
@@ -75,6 +71,10 @@ export default function QueueList({
       })
       .filter((id) => id.length > 0);
   }, [queuedVideos]);
+
+  const videoDraggableIds = useMemo(() => {
+    return videoIds.map((videoId, i) => `${videoId}-${i}`);
+  }, [videoIds]);
 
   const handleDragEnd = useCallback(
     (e: DragEndEvent) => {
@@ -89,10 +89,6 @@ export default function QueueList({
     },
     [moveQueuedVideo, videoIds]
   );
-
-  useEffect(() => {
-    if (queuedVideos != null && queuedVideos.length > 0) videoDetailsCallback();
-  }, [queuedVideos, videoDetailsCallback]);
 
   const cardContent = useMemo(() => {
     if (videoIds.length <= 1) {
@@ -119,7 +115,7 @@ export default function QueueList({
         onDragEnd={handleDragEnd}
       >
         <SortableContext
-          items={videoIds}
+          items={videoDraggableIds}
           strategy={verticalListSortingStrategy}
         >
           {moveLoading && (
@@ -134,37 +130,53 @@ export default function QueueList({
               const details = videoDetails?.[videoId];
               if (details == null) return null;
               return (
-                <SortableListItem
-                  key={`video-details-${videoId}-${i}`}
-                  id={videoId}
-                  disabled={moveLoading}
-                >
+                <>
                   {i > 1 && <Separator />}
-                  <VideoItem
-                    thumbnail={details.thumbnails.default}
-                    ActionButton={
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={() => {
-                          if (queueId == null) return;
-                          removeSong({ queueId, position: i });
-                        }}
-                      >
-                        <CircleX className="h-4 w-4" />
-                      </Button>
-                    }
-                    title={details.title}
-                    channelTitle={details.channelTitle}
-                  />
-                </SortableListItem>
+                  <SortableListItem
+                    key={`video-details-${videoId}-${i}`}
+                    id={`${videoId}-${i}`}
+                    disabled={moveLoading}
+                  >
+                    <VideoItem
+                      thumbnail={details.thumbnails.default}
+                      ActionButton={
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => {
+                            if (queueId == null) return;
+                            removeSong({ queueId, position: i });
+                          }}
+                          data-no-dnd="true"
+                          disabled={removeLoading}
+                        >
+                          <CircleX className="h-4 w-4" />
+                        </Button>
+                      }
+                      title={details.title}
+                      channelTitle={details.channelTitle}
+                    />
+                  </SortableListItem>
+                </>
               );
             })}
           </ul>
         </SortableContext>
       </DndContext>
     );
-  }, [videoDetails, videoIds, sensors, videoDetailsLoading, handleDragEnd]);
+  }, [
+    videoDetails,
+    videoIds,
+    sensors,
+    videoDetailsLoading,
+    handleDragEnd,
+    moveLoading,
+    queueId,
+    removeLoading,
+    removeSong,
+    videoDetailsError,
+    videoDraggableIds,
+  ]);
 
   return (
     <div className="space-y-2">
