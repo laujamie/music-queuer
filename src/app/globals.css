@@ -127,4 +127,5 @@ body {
   background-position: calc(100% + 30%) calc(100% - 10%);
   background-repeat: no-repeat;
   background-size: 40%;
+  background-attachment: fixed;
 }
