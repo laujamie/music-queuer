@@ -20,7 +20,7 @@ export default function VideoPlayer({
   }, []);
 
   if (queuedVideos.length === 0) {
-    return <p>No video loaded.</p>;
+    return null;
   }
 
   return (

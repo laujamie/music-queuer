@@ -71,12 +71,10 @@ export default function QueuePage() {
       {
         /* Only show video player for host of page */
         queueDetails?.hosting && (
-          <div className="flex-grow">
-            <VideoPlayer
-              queuedVideos={queueDetails?.videoLinks ?? []}
-              handleVideoEnded={skipVideo}
-            />
-          </div>
+          <VideoPlayer
+            queuedVideos={queueDetails?.videoLinks ?? []}
+            handleVideoEnded={skipVideo}
+          />
         )
       }
       <QueueList

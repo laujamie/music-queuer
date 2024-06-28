@@ -17,6 +17,7 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Id } from "@/convex/_generated/dataModel";
 import { toast } from "sonner";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 const LinkInputFormSchema = z.object({
   url: z.string().url(),
@@ -59,70 +60,82 @@ export default function LinkInput({
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="url"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>YouTube URL</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div className="flex gap-x-1.5 overflow-auto">
-          <Button type="submit" disabled={submitLoading}>
-            {submitLoading && (
-              <LoaderCircleIcon className="h-4 w-4 animate-spin" />
-            )}
-            &nbsp;Submit
-          </Button>
-          <Button
-            onClick={(e) => {
-              e.preventDefault();
-              setSkipLoading(true);
-              skipVideo()
-                .catch(() =>
-                  toast.error("Failed to skip video, please try again...")
-                )
-                .finally(() => setSkipLoading(false));
-            }}
-            disabled={skipLoading || queuedVideos.length <= 0}
-            variant="secondary"
+    <Card>
+      <CardHeader>
+        <CardTitle>Video Controls</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(handleSubmit)}
+            className="space-y-4"
           >
-            {skipLoading && (
-              <LoaderCircleIcon className="h-4 w-4 animate-spin" />
-            )}
-            &nbsp;Skip current video
-          </Button>
-          <Button
-            variant="secondary"
-            disabled={hostLoading || id == null}
-            onClick={(e) => {
-              e.preventDefault();
-              setHostLoading(true);
-              becomeHost()
-                .then(() => toast.success("You are now the host of this room"))
-                .catch(() =>
-                  toast.error("Failed to become host, please try again...")
-                )
-                .finally(() => setHostLoading(false));
-            }}
-          >
-            {hostLoading && (
-              <LoaderCircleIcon className="h-4 w-4 animate-spin" />
-            )}
-            &nbsp;Become Host
-          </Button>
-        </div>
-      </form>
-    </Form>
+            <FormField
+              control={form.control}
+              name="url"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>YouTube URL</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <div className="flex gap-x-1.5 overflow-auto">
+              <Button type="submit" disabled={submitLoading}>
+                {submitLoading && (
+                  <LoaderCircleIcon className="h-4 w-4 animate-spin" />
+                )}
+                &nbsp;Add video
+              </Button>
+              <Button
+                onClick={(e) => {
+                  e.preventDefault();
+                  setSkipLoading(true);
+                  skipVideo()
+                    .catch(() =>
+                      toast.error("Failed to skip video, please try again...")
+                    )
+                    .finally(() => setSkipLoading(false));
+                }}
+                disabled={skipLoading || queuedVideos.length <= 0}
+                variant="secondary"
+              >
+                {skipLoading && (
+                  <LoaderCircleIcon className="h-4 w-4 animate-spin" />
+                )}
+                &nbsp;Skip current video
+              </Button>
+              <Button
+                variant="secondary"
+                disabled={hostLoading || id == null}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setHostLoading(true);
+                  becomeHost()
+                    .then(() =>
+                      toast.success("You are now the host of this room")
+                    )
+                    .catch(() =>
+                      toast.error("Failed to become host, please try again...")
+                    )
+                    .finally(() => setHostLoading(false));
+                }}
+              >
+                {hostLoading && (
+                  <LoaderCircleIcon className="h-4 w-4 animate-spin" />
+                )}
+                &nbsp;Become Host
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   );
 }

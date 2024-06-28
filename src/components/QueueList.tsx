@@ -22,6 +22,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import VideoItem from "./VideoItem";
 import SortableListItem from "./SortableListItem";
 import { MouseSensor, TouchSensor } from "@/lib/dnd";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 type QueueListProps = {
   queuedVideos: string[];
@@ -81,13 +82,13 @@ export default function QueueList({
       const { active, over } = e;
 
       if (over && active.id !== over.id) {
-        const oldIdx = videoIds.indexOf(active.id as string);
-        const newIdx = videoIds.indexOf(over.id as string);
+        const oldIdx = videoDraggableIds.indexOf(active.id as string);
+        const newIdx = videoDraggableIds.indexOf(over.id as string);
 
         moveQueuedVideo(oldIdx, newIdx);
       }
     },
-    [moveQueuedVideo, videoIds]
+    [moveQueuedVideo, videoDraggableIds]
   );
 
   const cardContent = useMemo(() => {
@@ -180,8 +181,12 @@ export default function QueueList({
 
   return (
     <div className="space-y-2">
-      <h3 className="text-lg font-bold">Up Next</h3>
-      {cardContent}
+      <Card>
+        <CardHeader>
+          <CardTitle>Up Next</CardTitle>
+        </CardHeader>
+        <CardContent>{cardContent}</CardContent>
+      </Card>
     </div>
   );
 }
