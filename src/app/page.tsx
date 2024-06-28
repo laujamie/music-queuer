@@ -7,6 +7,7 @@ import { api } from "@/convex/_generated/api";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 
 export default function Home() {
   const [roomCode, setRoomCode] = useState("");
@@ -68,7 +69,8 @@ export default function Home() {
           Host Room
         </Button>
       </section>
-      <section className="mt-16 flex flex-col gap-y-4">
+      <Separator className="my-16" />
+      <section className="flex flex-col gap-y-4">
         <h2 className="text-xl font-semibold">What is this website?</h2>
         <p>
           The goal of this website is to let you easily play YouTube videos at

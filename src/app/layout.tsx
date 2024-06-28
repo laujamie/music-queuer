@@ -31,8 +31,8 @@ export default function RootLayout({
           >
             <ConvexClientProvider>
               <header>
-                <nav className="container py-2 flex items-center">
-                  <div className="grow">
+                <nav className="container py-2 flex items-center justify-between">
+                  <div>
                     <Link href="/">
                       <p className="font-bold text-lg">YouTube Queuer</p>
                     </Link>
