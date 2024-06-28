@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useMutation, useAction } from "convex/react";
 import {
+  useSessionId,
   useSessionMutation,
   useSessionQuery,
 } from "convex-helpers/react/sessions";
@@ -16,6 +17,7 @@ import Search from "@/components/Search";
 import ClipboardCopy from "@/components/ClipboardCopy";
 import { toast } from "sonner";
 import { ResultMap } from "@/convex/youtube";
+import { SessionId } from "convex-helpers/server/sessions.js";
 
 export default function QueuePage() {
   const params = useParams<{ queueCode: string }>();
@@ -25,7 +27,27 @@ export default function QueuePage() {
   const nextVideo = useMutation(api.queues.nextSong);
   const addVideo = useMutation(api.queues.addSong);
   const becomeHost = useSessionMutation(api.queues.becomeHost);
-  const moveQueuedVideo = useMutation(api.queues.moveSong);
+  const [sessionId, _] = useSessionId();
+  const moveQueuedVideo = useMutation(api.queues.moveSong).withOptimisticUpdate(
+    (localStorage, args) => {
+      const { currentIndex, newIndex } = args;
+      const currentValue = localStorage.getQuery(api.queues.getByCode, {
+        queueCode: params.queueCode,
+        sessionId,
+      });
+      if (currentValue != null) {
+        const newQueuedVideos = [...currentValue.videoLinks];
+        const temp = newQueuedVideos[currentIndex];
+        newQueuedVideos[currentIndex] = newQueuedVideos[newIndex];
+        newQueuedVideos[newIndex] = temp;
+        localStorage.setQuery(
+          api.queues.getByCode,
+          { queueCode: params.queueCode, sessionId },
+          { ...currentValue, videoLinks: newQueuedVideos }
+        );
+      }
+    }
+  );
   const removeSong = useMutation(api.queues.removeSong);
 
   const getVideoDetails = useAction(api.youtube.list);
