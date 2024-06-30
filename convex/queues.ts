@@ -1,8 +1,32 @@
 import { v } from "convex/values";
+import { subDays } from "date-fns";
 import { mutationWithSession, queryWithSession } from "./lib/auth";
 import { generateSlug } from "./lib/slug";
 import { QueueState } from "./shared";
-import { mutation } from "./_generated/server";
+import { internalMutation, mutation } from "./_generated/server";
+
+export const removeOldQueues = internalMutation({
+  handler: async (ctx) => {
+    const now = new Date();
+    const queuesToDelete = await ctx.db
+      .query("queues")
+      .withIndex("by_updated_time", (q) =>
+        q.lt("updatedTime", subDays(now, 1).getMilliseconds())
+      )
+      .collect();
+    const usersToDelete = await ctx.db
+      .query("users")
+      .withIndex("by_creation_time", (q) =>
+        q.lt("_creationTime", subDays(now, 14).getMilliseconds())
+      )
+      .collect();
+    const queueDeleteJobs = queuesToDelete.map((queue) =>
+      ctx.db.delete(queue._id)
+    );
+    const userDeleteJobs = usersToDelete.map((user) => ctx.db.delete(user._id));
+    return await Promise.all(queueDeleteJobs.concat(userDeleteJobs));
+  },
+});
 
 export const create = mutationWithSession({
   args: {},
@@ -17,6 +41,7 @@ export const create = mutationWithSession({
       hostId: userId,
       slug,
       links: [],
+      updatedTime: new Date().getTime(),
     });
     return { queueId, code: slug };
   },
@@ -64,6 +89,9 @@ export const join = mutationWithSession({
       .withIndex("by_slug", (q) => q.eq("slug", queueCode))
       .order("desc")
       .first();
+    if (queue) {
+      await ctx.db.patch(queue?._id, { updatedTime: new Date().getTime() });
+    }
     return queue?._id;
   },
 });
@@ -72,7 +100,10 @@ export const becomeHost = mutationWithSession({
   args: { id: v.id("queues") },
   handler: async (ctx, { id }) => {
     if (ctx.user == null) throw new Error("User could not be found");
-    await ctx.db.patch(id, { hostId: ctx.user._id });
+    await ctx.db.patch(id, {
+      hostId: ctx.user._id,
+      updatedTime: new Date().getTime(),
+    });
   },
 });
 
@@ -81,7 +112,10 @@ export const addSong = mutation({
   handler: async (ctx, { queueId, videoUrl }) => {
     const queue = await ctx.db.get(queueId);
     if (queue == null) throw new Error("Queue does not exist");
-    await ctx.db.patch(queueId, { links: [...queue.links, videoUrl] });
+    await ctx.db.patch(queueId, {
+      links: [...queue.links, videoUrl],
+      updatedTime: new Date().getTime(),
+    });
   },
 });
 
@@ -90,7 +124,10 @@ export const nextSong = mutation({
   handler: async (ctx, { queueId }) => {
     const queue = await ctx.db.get(queueId);
     if (queue == null) throw new Error("Queue does not exist");
-    await ctx.db.patch(queueId, { links: queue.links.slice(1) });
+    await ctx.db.patch(queueId, {
+      links: queue.links.slice(1),
+      updatedTime: new Date().getTime(),
+    });
   },
 });
 
@@ -103,6 +140,7 @@ export const removeSong = mutation({
       throw new Error("Invalid index provided");
     await ctx.db.patch(queueId, {
       links: queue.links.filter((_, i) => i !== position),
+      updatedTime: new Date().getTime(),
     });
   },
 });
@@ -133,6 +171,7 @@ export const moveSong = mutation({
     newLinks[newIndex] = temp;
     await ctx.db.patch(queueId, {
       links: newLinks,
+      updatedTime: new Date().getTime(),
     });
   },
 });

@@ -10,5 +10,8 @@ export default defineSchema({
     slug: v.string(),
     links: v.array(v.string()),
     hostId: v.id("users"),
-  }).index("by_slug", ["slug"]),
+    updatedTime: v.optional(v.number()),
+  })
+    .index("by_slug", ["slug"])
+    .index("by_updated_time", ["updatedTime"]),
 });
