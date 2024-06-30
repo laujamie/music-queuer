@@ -8,3 +8,5 @@ crons.cron(
   "0 0 * * 1",
   internal.queues.removeOldQueues
 );
+
+export default crons;
