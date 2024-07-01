@@ -1,6 +1,6 @@
 "use client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { SessionProvider } from "convex-helpers/react/sessions.js";
+import { SessionProvider } from "convex-helpers/react/sessions";
 import { ConvexProvider, ConvexReactClient } from "convex/react";
 import type { ReactNode } from "react";
 import { useState } from "react";
