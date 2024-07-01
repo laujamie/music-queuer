@@ -3,6 +3,7 @@ import { navigate } from "@/app/actions";
 import type { ErrorInfo, ReactNode } from "react";
 import { Component } from "react";
 import { Button } from "./ui/button";
+import Link from "next/link";
 
 type ErrorBoundaryProps = {
   children?: ReactNode;
@@ -41,17 +42,18 @@ export default class ErrorBoundary extends Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div className="space-y-2 text-center">
+        <div className="flex flex-col gap-y-4 items-center justify-center h-full">
           <h1>Sorry, there was an error</h1>
-          <Button
-            onClick={() => {
-              navigate("/");
-              this.resetErrorBoundary();
-            }}
-            variant="secondary"
-          >
-            Go Home
-          </Button>
+          <Link passHref href="/">
+            <Button
+              onClick={() => {
+                this.resetErrorBoundary();
+              }}
+              variant="secondary"
+            >
+              Go Home
+            </Button>
+          </Link>
         </div>
       );
     }

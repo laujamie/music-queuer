@@ -22,41 +22,41 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <body className="flex h-full flex-col pt-4 gap-y-8">
-        <ErrorBoundary>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
-            <ConvexClientProvider>
-              <header>
-                <nav className="container py-2 flex items-center justify-between">
-                  <div>
-                    <Link href="/">
-                      <p className="font-bold text-lg">YouTube Queuer</p>
-                    </Link>
-                  </div>
-                  <ModePicker />
-                </nav>
-              </header>
-              <main className="container grow">{children}</main>
-              <footer className="py-4 bg-muted">
-                <div className="flex container">
-                  <div className="grow" />
-                  <a
-                    href="https://github.com/laujamie/music-queuer"
-                    className="hover:text-primary"
-                    aria-label="Github repository link"
-                  >
-                    <GithubIcon />
-                  </a>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ConvexClientProvider>
+            <header>
+              <nav className="container py-2 flex items-center justify-between">
+                <div>
+                  <Link href="/">
+                    <p className="font-bold text-lg">YouTube Queuer</p>
+                  </Link>
                 </div>
-              </footer>
-              <Toaster />
-            </ConvexClientProvider>
-          </ThemeProvider>
-        </ErrorBoundary>
+                <ModePicker />
+              </nav>
+            </header>
+            <main className="container grow">
+              <ErrorBoundary>{children}</ErrorBoundary>
+            </main>
+            <footer className="py-4 bg-muted">
+              <div className="flex container">
+                <div className="grow" />
+                <a
+                  href="https://github.com/laujamie/music-queuer"
+                  className="hover:text-primary"
+                  aria-label="Github repository link"
+                >
+                  <GithubIcon />
+                </a>
+              </div>
+            </footer>
+            <Toaster />
+          </ConvexClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

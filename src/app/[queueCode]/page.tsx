@@ -1,23 +1,21 @@
 "use client";
 
-import { useEffect } from "react";
-import { useParams } from "next/navigation";
-import { useMutation, useAction } from "convex/react";
+import ClipboardCopy from "@/components/ClipboardCopy";
+import LinkInput from "@/components/LinkInput";
+import QueueList from "@/components/QueueList";
+import Search from "@/components/Search";
+import VideoPlayer from "@/components/VideoPlayer";
+import { api } from "@/convex/_generated/api";
+import { ResultMap } from "@/convex/youtube";
 import {
   useSessionId,
   useSessionMutation,
   useSessionQuery,
 } from "convex-helpers/react/sessions";
-import { api } from "@/convex/_generated/api";
-import VideoPlayer from "@/components/VideoPlayer";
-import LinkInput from "@/components/LinkInput";
-import QueueList from "@/components/QueueList";
-import { useCallback, useState } from "react";
-import Search from "@/components/Search";
-import ClipboardCopy from "@/components/ClipboardCopy";
+import { useAction, useMutation } from "convex/react";
+import { useParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ResultMap } from "@/convex/youtube";
-import { SessionId } from "convex-helpers/server/sessions.js";
 
 export default function QueuePage() {
   const params = useParams<{ queueCode: string }>();
@@ -87,6 +85,10 @@ export default function QueuePage() {
       await nextVideo({ queueId: queueDetails.id });
     }
   }, [queueDetails, nextVideo]);
+
+  if (!queueDetails) {
+    return "Loading...";
+  }
 
   return (
     <div className="space-y-8">
