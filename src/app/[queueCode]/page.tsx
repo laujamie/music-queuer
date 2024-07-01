@@ -29,6 +29,7 @@ export default function QueuePage() {
   const moveQueuedVideo = useMutation(api.queues.moveSong).withOptimisticUpdate(
     (localStorage, args) => {
       const { currentIndex, newIndex } = args;
+      if (!sessionId) return;
       const currentValue = localStorage.getQuery(api.queues.getByCode, {
         queueCode: params.queueCode,
         sessionId,
