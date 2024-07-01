@@ -1,6 +1,6 @@
+import type { ThumbnailObj } from "@/convex/lib/youtube";
 import Image from "next/image";
 import type { ReactNode } from "react";
-import type { ThumbnailObj } from "@/convex/lib/youtube";
 
 type VideoItemProps = {
   thumbnail: ThumbnailObj;

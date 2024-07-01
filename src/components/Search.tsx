@@ -1,4 +1,3 @@
-"use client";
 import { useCallback, useState } from "react";
 import { useAction } from "convex/react";
 import { useForm } from "react-hook-form";

@@ -1,8 +1,5 @@
-"use client";
-
 import { useEffect, useState, HTMLAttributes } from "react";
 import ReactPlayer from "react-player";
-import { toast } from "sonner";
 
 type VideoPlayerProps = {
   queuedVideos: string[];

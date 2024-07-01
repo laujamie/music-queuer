@@ -1,9 +1,9 @@
 "use client";
-import { useState } from "react";
-import type { ReactNode } from "react";
-import { ConvexProvider, ConvexReactClient } from "convex/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { SessionProvider } from "convex-helpers/react/sessions.js";
+import { ConvexProvider, ConvexReactClient } from "convex/react";
+import type { ReactNode } from "react";
+import { useState } from "react";
 
 const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 

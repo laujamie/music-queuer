@@ -1,8 +1,8 @@
 "use client";
-import { Component } from "react";
-import type { ReactNode, ErrorInfo } from "react";
-import { Button } from "./ui/button";
 import { navigate } from "@/app/actions";
+import type { ErrorInfo, ReactNode } from "react";
+import { Component } from "react";
+import { Button } from "./ui/button";
 
 type ErrorBoundaryProps = {
   children?: ReactNode;
