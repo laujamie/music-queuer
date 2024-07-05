@@ -159,13 +159,11 @@ export default function QueuePage() {
         }}
       />
 
-      {queueDetails?.hosting === false && (
-        <Search
-          addToQueue={async (link) =>
-            await addVideo({ videoUrl: link, queueId: queueDetails?.id })
-          }
-        />
-      )}
+      <Search
+        addToQueue={async (link) =>
+          await addVideo({ videoUrl: link, queueId: queueDetails?.id })
+        }
+      />
       <div className="space-y-1">
         <h2>Invite your friends!</h2>
         <ClipboardCopy

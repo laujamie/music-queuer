@@ -11,6 +11,7 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
 import { Button } from "./ui/button";
 import type { SearchObj } from "@/convex/lib/youtube";
 import VideoItem from "./VideoItem";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 
 const formSchema = z.object({
   query: z
@@ -72,78 +73,82 @@ export default function Search({ addToQueue }: SearchProps) {
   }, [searchResults, search]);
 
   return (
-    <section className="space-y-2">
-      <h2 className="text-lg font-bold">Find a Video</h2>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex gap-x-4">
-          <FormField
-            control={form.control}
-            name="query"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <div className="relative grow">
-                    <SearchIcon className="absolute left-0 top-0 m-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input className="pl-9" placeholder="Search" {...field} />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button
-            type="submit"
-            variant="ghost"
-            size="icon"
-            disabled={searchLoading}
-          >
-            {searchLoading ? (
-              <LoaderCircleIcon className="h-4 w-4 animate-spin" />
-            ) : (
-              <SearchIcon className="h-4 w-4" />
-            )}
-          </Button>
-        </form>
-      </Form>
-      {searchResults?.items && (
-        <div>
-          {searchResults.items.map((item, i) => {
-            if (item.id == null || item.snippet == null) return null;
-            // TODO: Clean up search results into new component
-            return (
-              <VideoItem
-                key={`search-result-${item.id?.videoId}-${i}`}
-                thumbnail={item.snippet.thumbnails.default}
-                title={item.snippet.title}
-                channelTitle={item.snippet.channelTitle}
-                ActionButton={
-                  <Button
-                    onClick={() => {
-                      setAddQueueLoading(true);
-                      addToQueue(
-                        `https://youtube.com/watch?v=${item.id!.videoId}`
-                      )
-                        .catch(() =>
-                          toast.error(
-                            "Failed to add video to queue, please try again..."
-                          )
+    <Card className="space-y-2">
+      <CardHeader>
+        <CardTitle>Find a Video</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex gap-x-4">
+            <FormField
+              control={form.control}
+              name="query"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <div className="relative grow">
+                      <SearchIcon className="absolute left-0 top-0 m-2.5 h-4 w-4 text-muted-foreground" />
+                      <Input className="pl-9" placeholder="Search" {...field} />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              type="submit"
+              variant="ghost"
+              size="icon"
+              disabled={searchLoading}
+            >
+              {searchLoading ? (
+                <LoaderCircleIcon className="h-4 w-4 animate-spin" />
+              ) : (
+                <SearchIcon className="h-4 w-4" />
+              )}
+            </Button>
+          </form>
+        </Form>
+        {searchResults?.items && (
+          <div>
+            {searchResults.items.map((item, i) => {
+              if (item.id == null || item.snippet == null) return null;
+              // TODO: Clean up search results into new component
+              return (
+                <VideoItem
+                  key={`search-result-${item.id?.videoId}-${i}`}
+                  thumbnail={item.snippet.thumbnails.default}
+                  title={item.snippet.title}
+                  channelTitle={item.snippet.channelTitle}
+                  ActionButton={
+                    <Button
+                      onClick={() => {
+                        setAddQueueLoading(true);
+                        addToQueue(
+                          `https://youtube.com/watch?v=${item.id!.videoId}`
                         )
-                        .finally(() => setAddQueueLoading(false));
-                    }}
-                    variant="ghost"
-                    disabled={addQueueLoading}
-                  >
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                }
-              />
-            );
-          })}
-        </div>
-      )}
-      {searchResults?.pageToken && (
-        <Button onClick={loadMoreSearch}>Load More</Button>
-      )}
-    </section>
+                          .catch(() =>
+                            toast.error(
+                              "Failed to add video to queue, please try again..."
+                            )
+                          )
+                          .finally(() => setAddQueueLoading(false));
+                      }}
+                      variant="ghost"
+                      disabled={addQueueLoading}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  }
+                />
+              );
+            })}
+          </div>
+        )}
+        {searchResults?.pageToken && (
+          <Button onClick={loadMoreSearch}>Load More</Button>
+        )}
+      </CardContent>
+    </Card>
   );
 }
